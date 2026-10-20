@@ -1,0 +1,940 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#090914">
+  <title>Aditi.env — The Friend Archive</title>
+  <meta name="description" content="A tiny digital archive dedicated to Aditi — friendship, chaos, memories, and laughs.">
+
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap');
+
+    /* ---------- Tokens ---------- */
+    :root {
+      --bg: #080811;
+      --bg2: #101022;
+      --card: rgba(255, 255, 255, .075);
+      --line: rgba(255, 255, 255, .12);
+      --text: #f8f7ff;
+      --muted: #aaa8bd;
+      --pink: #ff7ac8;
+      --purple: #9c7bff;
+      --blue: #62c9ff;
+      --green: #8ff0c1;
+      --shadow: 0 24px 80px rgba(0, 0, 0, .38);
+      --radius: 28px;
+    }
+
+    /* ---------- Base ---------- */
+    * { box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      background: radial-gradient(circle at 20% 0%, #17112d 0, #080811 38%, #05050b 100%);
+      color: var(--text);
+      font-family: "DM Sans", sans-serif;
+      overflow-x: hidden;
+    }
+
+    body:before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background: linear-gradient(120deg, transparent 0 35%, rgba(156, 123, 255, .025), transparent 65%);
+      z-index: -1;
+    }
+
+    h1, h2, h3 {
+      font-family: "Space Grotesk", sans-serif;
+      letter-spacing: -.035em;
+    }
+
+    h1 {
+      font-size: clamp(3rem, 9vw, 7rem);
+      line-height: .95;
+      margin: .25rem 0;
+    }
+
+    h2 {
+      font-size: clamp(2rem, 5vw, 4rem);
+      margin: 0 0 14px;
+    }
+
+    h3 { margin: 0; }
+
+    p {
+      line-height: 1.7;
+      color: var(--muted);
+    }
+
+    button { font: inherit; }
+
+    /* ---------- Layout helpers ---------- */
+    .container {
+      width: min(1120px, calc(100% - 36px));
+      margin: auto;
+    }
+
+    .section {
+      padding: 110px 0;
+      position: relative;
+    }
+
+    .eyebrow {
+      color: #c6baff;
+      font-size: .78rem;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+      font-weight: 700;
+    }
+
+    .grid {
+      display: grid;
+      gap: 18px;
+    }
+
+    .glass {
+      background: var(--card);
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+    }
+
+    /* ---------- Buttons ---------- */
+    .btn {
+      border: 0;
+      border-radius: 999px;
+      padding: 15px 22px;
+      min-height: 52px;
+      color: #fff;
+      font-weight: 700;
+      cursor: pointer;
+      transition: .25s;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .btn.primary {
+      background: linear-gradient(135deg, #ff74c8, #8e76ff);
+      box-shadow: 0 0 30px rgba(255, 116, 200, .24);
+    }
+
+    .btn.secondary {
+      background: rgba(255, 255, 255, .08);
+      border: 1px solid var(--line);
+    }
+
+    .btn:hover { transform: translateY(-3px); }
+
+    .btn:focus-visible,
+    .choice:focus-visible,
+    .egg:focus-visible {
+      outline: 2px solid var(--blue);
+      outline-offset: 3px;
+    }
+
+    /* ---------- Loader ---------- */
+    #loader {
+      position: fixed;
+      inset: 0;
+      background: #06060d;
+      display: grid;
+      place-items: center;
+      z-index: 9999;
+      transition: opacity .8s, visibility .8s;
+    }
+
+    #loader.hide {
+      opacity: 0;
+      visibility: hidden;
+    }
+
+    .loader-box {
+      width: min(420px, 82vw);
+      text-align: center;
+    }
+
+    .loader-title {
+      font: 700 clamp(1.7rem, 6vw, 2.4rem) "Space Grotesk";
+      margin-bottom: 8px;
+    }
+
+    .loader-sub {
+      color: var(--muted);
+      margin-bottom: 24px;
+    }
+
+    .progress {
+      height: 5px;
+      background: #222237;
+      border-radius: 9px;
+      overflow: hidden;
+    }
+
+    .progress i {
+      display: block;
+      height: 100%;
+      width: 0;
+      background: linear-gradient(90deg, var(--pink), var(--purple), var(--blue));
+      animation: load 1.8s ease forwards;
+    }
+
+    @keyframes load { to { width: 100%; } }
+
+    /* ---------- Hero ---------- */
+    .hero {
+      min-height: 100svh;
+      display: grid;
+      place-items: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 2;
+      text-align: center;
+      max-width: 850px;
+    }
+
+    .hero p { font-size: 1.12rem; }
+
+    .hero .tiny {
+      font-size: .86rem;
+      margin-top: 12px;
+    }
+
+    .blob {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(70px);
+      opacity: .32;
+      pointer-events: none;
+    }
+
+    .b1 {
+      width: 360px;
+      height: 360px;
+      background: #8b57ff;
+      left: -140px;
+      top: 10%;
+    }
+
+    .b2 {
+      width: 300px;
+      height: 300px;
+      background: #ff4db9;
+      right: -100px;
+      bottom: 10%;
+    }
+
+    .stars {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+    }
+
+    .star {
+      position: absolute;
+      width: 2px;
+      height: 2px;
+      border-radius: 50%;
+      background: #fff;
+      opacity: .7;
+      animation: twinkle 3s ease-in-out infinite;
+    }
+
+    @keyframes twinkle {
+      50% {
+        opacity: .15;
+        transform: scale(.55);
+      }
+    }
+
+    .hero-scroll {
+      margin-top: 35px;
+      color: #8f8da3;
+      font-size: .78rem;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+    }
+
+    /* ---------- Intro ---------- */
+    .intro-card {
+      padding: clamp(24px, 5vw, 48px);
+      border-radius: var(--radius);
+      max-width: 850px;
+      margin: auto;
+    }
+
+    .signature {
+      display: inline-block;
+      margin-top: 18px;
+      color: #ddd6ff;
+      font-family: cursive;
+      font-size: 1.35rem;
+      transform: rotate(-3deg);
+    }
+
+    /* ---------- Reasons ---------- */
+    .reasons {
+      grid-template-columns: repeat(3, 1fr);
+      margin-top: 35px;
+    }
+
+    .reason {
+      padding: 25px;
+      border-radius: 24px;
+      min-height: 190px;
+      transition: .3s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .reason:after {
+      content: "";
+      position: absolute;
+      inset: auto -40px -70px auto;
+      width: 140px;
+      height: 140px;
+      border-radius: 50%;
+      background: rgba(156, 123, 255, .13);
+      filter: blur(15px);
+    }
+
+    .reason:hover {
+      transform: translateY(-7px);
+      border-color: rgba(255, 255, 255, .22);
+    }
+
+    .icon {
+      font-size: 1.8rem;
+      margin-bottom: 22px;
+    }
+
+    .reason p { font-size: .92rem; }
+
+    /* ---------- Timeline ---------- */
+    .timeline {
+      margin-top: 40px;
+      position: relative;
+    }
+
+    .timeline:before {
+      content: "";
+      position: absolute;
+      left: 50%;
+      top: 0;
+      bottom: 0;
+      width: 1px;
+      background: linear-gradient(var(--purple), rgba(255, 255, 255, .06));
+      transform: translateX(-50%);
+    }
+
+    .memory {
+      width: calc(50% - 35px);
+      padding: 18px;
+      border-radius: 24px;
+      margin: 0 0 30px;
+      position: relative;
+    }
+
+    .memory:nth-child(even) { margin-left: auto; }
+
+    .memory:before {
+      content: "";
+      position: absolute;
+      top: 27px;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: var(--pink);
+      box-shadow: 0 0 0 7px rgba(255, 122, 200, .1), 0 0 22px rgba(255, 122, 200, .5);
+    }
+
+    .memory:nth-child(odd):before { right: -41px; }
+    .memory:nth-child(even):before { left: -41px; }
+
+    .photo {
+      aspect-ratio: 16 / 9;
+      border-radius: 17px;
+      background: linear-gradient(135deg, #201b3b, #151525);
+      display: grid;
+      place-items: center;
+      color: #7d7992;
+      overflow: hidden;
+    }
+
+    .photo img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .memory .date {
+      color: #a89aff;
+      font-size: .75rem;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      margin: 15px 0 5px;
+    }
+
+    .memory h3 { font-size: 1.15rem; }
+    .memory p { font-size: .9rem; }
+
+    /* ---------- Quiz ---------- */
+    .quiz {
+      max-width: 780px;
+      margin: 40px auto 0;
+      padding: clamp(22px, 5vw, 42px);
+      border-radius: var(--radius);
+    }
+
+    .qnum {
+      color: #a99cff;
+      font-size: .8rem;
+    }
+
+    .quiz h3 {
+      font-size: clamp(1.35rem, 4vw, 2rem);
+      margin: 10px 0 22px;
+    }
+
+    .choices {
+      display: grid;
+      gap: 10px;
+    }
+
+    .choice {
+      text-align: left;
+      padding: 15px 16px;
+      border-radius: 16px;
+      background: rgba(255, 255, 255, .06);
+      border: 1px solid var(--line);
+      color: #eee;
+      cursor: pointer;
+      transition: .2s;
+    }
+
+    .choice:hover {
+      background: rgba(255, 255, 255, .11);
+      transform: translateX(3px);
+    }
+
+    .choice.selected {
+      border-color: #a78cff;
+      background: rgba(156, 123, 255, .17);
+    }
+
+    .quiz-actions {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      margin-top: 22px;
+    }
+
+    .result {
+      text-align: center;
+      padding: 20px 0 4px;
+    }
+
+    .score {
+      font-size: 4rem;
+      font-family: "Space Grotesk";
+      font-weight: 700;
+      background: linear-gradient(90deg, var(--pink), var(--purple), var(--blue));
+      -webkit-background-clip: text;
+      color: transparent;
+    }
+
+    /* ---------- "Open when" cards ---------- */
+    .open-grid {
+      grid-template-columns: repeat(4, 1fr);
+      margin-top: 38px;
+    }
+
+    .open-card {
+      padding: 25px;
+      border-radius: 23px;
+      cursor: pointer;
+      min-height: 170px;
+      transition: .25s;
+    }
+
+    .open-card:hover {
+      transform: translateY(-6px);
+      background: rgba(255, 255, 255, .1);
+    }
+
+    .open-card .big { font-size: 2rem; }
+
+    .open-card h3 {
+      margin-top: 22px;
+      font-size: 1.05rem;
+    }
+
+    .open-card p { font-size: .82rem; }
+
+    /* ---------- Stats ---------- */
+    .stats {
+      display: grid;
+      gap: 18px;
+      max-width: 850px;
+      margin: 40px auto;
+    }
+
+    .stat {
+      padding: 24px;
+      border-radius: 22px;
+    }
+
+    .stat-top {
+      display: flex;
+      justify-content: space-between;
+      gap: 15px;
+      margin-bottom: 13px;
+      font-weight: 600;
+    }
+
+    .bar {
+      height: 10px;
+      border-radius: 99px;
+      background: #252438;
+      overflow: hidden;
+    }
+
+    .bar i {
+      display: block;
+      height: 100%;
+      width: 0;
+      border-radius: 99px;
+      background: linear-gradient(90deg, var(--purple), var(--pink), var(--blue));
+      transition: width 1.4s cubic-bezier(.2, .8, .2, 1);
+    }
+
+    /* ---------- Finale ---------- */
+    .final {
+      text-align: center;
+      min-height: 85svh;
+      display: grid;
+      place-items: center;
+    }
+
+    .final-inner { max-width: 800px; }
+
+    .final .quote {
+      font-size: clamp(1.3rem, 4vw, 2rem);
+      color: #ddd9e9;
+    }
+
+    .footer-note {
+      margin-top: 30px;
+      font-size: .9rem;
+      color: #77758a;
+    }
+
+    /* ---------- Easter egg & modal ---------- */
+    .egg {
+      position: fixed;
+      right: 16px;
+      bottom: 16px;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      border: 1px solid var(--line);
+      background: rgba(20, 18, 35, .72);
+      color: #cfc9ff;
+      cursor: pointer;
+      z-index: 20;
+      backdrop-filter: blur(10px);
+    }
+
+    .modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(4, 4, 10, .72);
+      backdrop-filter: blur(13px);
+      display: none;
+      place-items: center;
+      padding: 20px;
+      z-index: 100;
+    }
+
+    .modal.show { display: grid; }
+
+    .modal-box {
+      max-width: 650px;
+      width: 100%;
+      padding: 32px;
+      border-radius: 28px;
+      animation: pop .35s ease;
+    }
+
+    .modal-box h3 { font-size: 1.7rem; }
+
+    .close {
+      float: right;
+      border: 0;
+      background: rgba(255, 255, 255, .08);
+      color: #fff;
+      border-radius: 50%;
+      width: 38px;
+      height: 38px;
+      cursor: pointer;
+    }
+
+    @keyframes pop {
+      from {
+        opacity: 0;
+        transform: translateY(15px) scale(.97);
+      }
+      to {
+        opacity: 1;
+        transform: none;
+      }
+    }
+
+    /* ---------- Reveal on scroll ---------- */
+    .reveal {
+      opacity: 0;
+      transform: translateY(22px);
+      transition: opacity .75s ease, transform .75s ease;
+    }
+
+    .reveal.visible {
+      opacity: 1;
+      transform: none;
+    }
+
+    /* ---------- Secret screen ---------- */
+    .secret-screen {
+      position: fixed;
+      inset: 0;
+      background: radial-gradient(circle, #241b45, #080811 65%);
+      display: none;
+      place-items: center;
+      z-index: 300;
+      padding: 25px;
+      text-align: center;
+    }
+
+    .secret-screen.show { display: grid; }
+
+    .confetti {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      pointer-events: none;
+    }
+
+    .confetti span {
+      position: absolute;
+      width: 7px;
+      height: 13px;
+      animation: fall 2.8s linear infinite;
+    }
+
+    @keyframes fall {
+      from { transform: translateY(-20px) rotate(0); }
+      to { transform: translateY(110vh) rotate(720deg); }
+    }
+
+    /* ---------- Responsive ---------- */
+    @media (max-width: 850px) {
+      .reasons { grid-template-columns: repeat(2, 1fr); }
+      .open-grid { grid-template-columns: repeat(2, 1fr); }
+      .timeline:before { left: 9px; }
+
+      .memory,
+      .memory:nth-child(even) {
+        width: calc(100% - 35px);
+        margin-left: 35px;
+      }
+
+      .memory:nth-child(odd):before,
+      .memory:nth-child(even):before {
+        left: -32px;
+        right: auto;
+      }
+    }
+
+    @media (max-width: 520px) {
+      .container { width: min(100% - 24px, 1120px); }
+      .section { padding: 80px 0; }
+      .reasons,
+      .open-grid { grid-template-columns: 1fr; }
+      .reason { min-height: auto; }
+      .hero p { font-size: 1rem; }
+      .memory { padding: 13px; }
+      .quiz-actions { flex-direction: column; }
+      .btn { width: 100%; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+
+      *, *:before, *:after {
+        animation-duration: .01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: .01ms !important;
+      }
+
+      .reveal {
+        opacity: 1;
+        transform: none;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Loader -->
+  <div id="loader" aria-label="Loading">
+    <div class="loader-box">
+      <div class="loader-title">Loading Aditi.env...</div>
+      <div class="loader-sub">Preparing something special...</div>
+      <div class="progress"><i></i></div>
+    </div>
+  </div>
+
+  <main id="top">
+
+    <!-- Hero -->
+    <section class="hero">
+      <div class="stars" id="stars"></div>
+      <div class="blob b1"></div>
+      <div class="blob b2"></div>
+      <div class="hero-content container">
+        <div class="eyebrow">Friend Archive · v1.0</div>
+        <h1>Hey Aditi 👋</h1>
+        <p>This little corner of the internet is dedicated to you.</p>
+        <div class="tiny">Because some friendships deserve their own website.</div>
+        <button class="btn primary" id="enter">Enter Aditi's World ✨</button>
+        <div class="hero-scroll">scroll to unlock the archive ↓</div>
+      </div>
+    </section>
+
+    <!-- 01 · Intro -->
+    <section class="section" id="intro">
+      <div class="container">
+        <div class="eyebrow">01 · The reason</div>
+        <h2>Okay, here's the reason this exists...</h2>
+        <div class="intro-card glass reveal">
+          <p>Aditi itni cute kaise ho ? 😁</p>
+          <span class="signature">— Your idiot friend Aadarsh</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- 02 · Reasons -->
+    <section class="section" id="awesome">
+      <div class="container">
+        <div class="eyebrow">02 · Evidence</div>
+        <h2>Why Aditi is basically a 10/10 human</h2>
+        <div class="grid reasons">
+          <article class="reason glass reveal">
+            <div class="icon">😂</div>
+            <h3>Professional Overthinker</h3>
+            <p>Somehow itni overthinking karne ke baad bhi itni pyari lagti hai...</p>
+          </article>
+          <article class="reason glass reveal">
+            <div class="icon">🫶</div>
+            <h3>Always There</h3>
+            <p>One of those people jo hamesha sath rahte hai chahe mai galat karu ya sahi 🤝</p>
+          </article>
+          <article class="reason glass reveal">
+            <div class="icon">🤡</div>
+            <h3>Certified Partner in Bakchodi</h3>
+            <p>Har baat me backchodi samajh hi nhi aata baat ho rha hai ya backchodi 🤣</p>
+          </article>
+          <article class="reason glass reveal">
+            <div class="icon">⭐</div>
+            <h3>Character</h3>
+            <p>Character to aisa hai ki curve hi curve .. 😍</p>
+          </article>
+          <article class="reason glass reveal">
+            <div class="icon">💬</div>
+            <h3>conversation</h3>
+            <p>Samajh hi nhi aata conversation ho rha hai ya jhagada .. 🤣</p>
+          </article>
+          <article class="reason glass reveal">
+            <div class="icon">❤️</div>
+            <h3>Rare Human</h3>
+            <p>One of the rarest person i have seen in my life.. Special person 🙂🙃</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- 03 · Memories -->
+    <section class="section" id="memories">
+      <div class="container">
+        <div class="eyebrow">03 · The archive</div>
+        <h2>Moments that deserve their own museum 📸</h2>
+        <div class="timeline">
+          <article class="memory glass reveal">
+            <div class="photo"><img src="1.jpg" alt="Memory 1" loading="lazy"></div>
+            <div class="date"></div>
+            <h3>Ufffff... 😭</h3>
+            <p>Bas karo yaar, itna cute hona legal bhi hai kya? 😭😂</p>
+          </article>
+          <article class="memory glass reveal">
+            <div class="photo"><img src="2.jpg" alt="Memory 2" loading="lazy"></div>
+            <div class="date"></div>
+            <h3>😅</h3>
+            <p>Aise mat dekho, dil already tumhare side hai 😅❤️</p>
+          </article>
+          <article class="memory glass reveal">
+            <div class="photo"><img src="3.jpg" alt="Memory 3" loading="lazy"></div>
+            <div class="date"></div>
+            <h3>🙈</h3>
+            <p>Bas karo, warna mujhe tumhari tareef ki aadat ho jayegi 🙈😂</p>
+          </article>
+          <article class="memory glass reveal">
+            <div class="photo"><img src="4.jpg" alt="Memory 4" loading="lazy"></div>
+            <div class="date"></div>
+            <h3>💖</h3>
+            <p>Bas bas, itna bhi mat sharmao… main bhi sharma jaunga 🙈😅</p>
+          </article>
+          <article class="memory glass reveal">
+            <div class="photo"><img src="5.jpg" alt="Memory 5" loading="lazy"></div>
+            <div class="date"></div>
+            <h3>☠️</h3>
+            <p>Tumhara ye smile wala attack kaafi dangerous hai 😳😂</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- 06 · Science -->
+    <section class="section" id="science">
+      <div class="container">
+        <div class="eyebrow">04 · Peer-reviewed nonsense</div>
+        <h2>Important Scientific Research 🔬</h2>
+        <div class="stats">
+          <div class="stat glass reveal">
+            <div class="stat-top"><span>Probability of Aditi making the conversation chaotic</span><b>97%</b></div>
+            <div class="bar"><i data-width="97%"></i></div>
+          </div>
+          <div class="stat glass reveal">
+            <div class="stat-top"><span>Probability of us laughing at something completely stupid</span><b>99.8%</b></div>
+            <div class="bar"><i data-width="99.8%"></i></div>
+          </div>
+          <div class="stat glass reveal">
+            <div class="stat-top"><span>Probability of this friendship surviving nonsense</span><b>100%</b></div>
+            <div class="bar"><i data-width="100%"></i></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 07 · Finale -->
+    <section class="section final">
+      <div class="container final-inner">
+        <div class="eyebrow">05 · System message</div>
+        <h2>One last thing...</h2>
+        <p class="quote">“Some people become friends. Some become family. And then there's you.”</p>
+        <h3 style="font-size:1.6rem">Thanks for being you, Aditi. ❤️</h3>
+        <p>Made with ❤️, chaos, and way too much coding by your idiot best friend.</p>
+        <button class="btn primary" onclick="window.location.href='op.html'">
+  Something special...
+</button>
+        <div class="footer-note">Aditi.exe · Friendship build · No romance module installed.</div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Easter egg trigger -->
+  <button class="egg" id="egg" aria-label="Secret star">✦</button>
+
+  <!-- Secret screen -->
+  <div class="secret-screen" id="secret">
+    <div class="confetti" id="confetti"></div>
+    <div style="max-width:760px;position:relative">
+      <div class="eyebrow">SECRET ARCHIVE UNLOCKED</div>
+      <h1 style="font-size:clamp(2.5rem,8vw,6rem)">YOU FOUND THE SECRET 👀</h1>
+      <p style="font-size:1.2rem">Okay, you weren't supposed to find this...</p>
+      <div class="glass" style="padding:28px;border-radius:26px;margin:25px 0">
+        <p>[WRITE A SECRET PERSONAL MESSAGE FOR ADITI HERE]</p>
+      </div>
+      <button class="btn secondary" id="secretClose">Back to the archive</button>
+    </div>
+  </div>
+
+  <script>
+    const $ = s => document.querySelector(s);
+    const $$ = s => [...document.querySelectorAll(s)];
+
+    // Loader
+    window.addEventListener('load', () => setTimeout(() => $('#loader').classList.add('hide'), 1900));
+
+    // Stars
+    const stars = $('#stars');
+    for (let i = 0; i < 85; i++) {
+      const s = document.createElement('i');
+      s.className = 'star';
+      s.style.left = Math.random() * 100 + '%';
+      s.style.top = Math.random() * 100 + '%';
+      s.style.animationDelay = Math.random() * 3 + 's';
+      s.style.opacity = .2 + Math.random() * .7;
+      stars.appendChild(s);
+    }
+
+    // Navigation buttons
+    $('#enter').onclick = () => $('#intro').scrollIntoView({ behavior: 'smooth' });
+
+    // Reveal on scroll
+    const observer = new IntersectionObserver(entries => entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('visible');
+        const bar = e.target.querySelector('.bar i');
+        if (bar) bar.style.width = bar.dataset.width;
+        observer.unobserve(e.target);
+      }
+    }), { threshold: .14 });
+    $$('.reveal').forEach(x => observer.observe(x));
+
+    // Secret: tap the star 5 times
+    let taps = 0, timer;
+    $('#egg').onclick = () => {
+      taps++;
+      clearTimeout(timer);
+      timer = setTimeout(() => taps = 0, 1400);
+      if (taps >= 5) {
+        taps = 0;
+        openSecret();
+      }
+    };
+
+    function openSecret() {
+      const s = $('#secret');
+      s.classList.add('show');
+      $('#confetti').innerHTML = '';
+      for (let i = 0; i < 55; i++) {
+        const x = document.createElement('span');
+        x.textContent = ['✦', '·', '✧', '•'][Math.floor(Math.random() * 4)];
+        x.style.left = Math.random() * 100 + '%';
+        x.style.animationDelay = Math.random() * 2 + 's';
+        x.style.fontSize = 8 + Math.random() * 18 + 'px';
+        $('#confetti').appendChild(x);
+      }
+    }
+
+    $('#secretClose').onclick = () => $('#secret').classList.remove('show');
+
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape') {
+        $('#secret').classList.remove('show');
+      }
+    });
+  </script>
+</body>
+</html>

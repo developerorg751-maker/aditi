@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Best Friend?</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      overflow: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-family: Arial, sans-serif;
+      background: #fff5f8;
+      color: #172033;
+    }
+
+    .card {
+      width: 100%;
+      padding: 20px;
+      text-align: center;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(2.2rem, 7vw, 4.5rem);
+      line-height: 1.1;
+      font-weight: 800;
+    }
+
+    p {
+      margin: 30px 0 65px;
+      color: #555b68;
+      font-size: clamp(1rem, 3vw, 1.4rem);
+    }
+
+    /* Buttons stay normally side-by-side at the start */
+    .buttons {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 25px;
+      position: relative;
+    }
+
+    button {
+      border-radius: 50px;
+      padding: 18px 42px;
+      min-width: 145px;
+      font-size: 20px;
+      font-weight: bold;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    #yes {
+      border: none;
+      background: #f55bad;
+      color: white;
+      box-shadow: 0 10px 25px rgba(245, 91, 173, 0.3);
+      transition: transform 0.2s;
+    }
+
+    #yes:hover {
+      transform: scale(1.05);
+    }
+
+    /* IMPORTANT:
+       No starts in normal layout */
+    #no {
+      position: relative;
+      background: white;
+      color: #ef62aa;
+      border: 2px solid #ef62aa;
+      z-index: 9999;
+      transition:
+        left 0.25s ease,
+        top 0.25s ease;
+    }
+
+    .heart {
+      margin-top: 45px;
+      font-size: 35px;
+    }
+
+    @media (max-width: 600px) {
+      button {
+        min-width: 120px;
+        padding: 15px 30px;
+        font-size: 18px;
+      }
+
+      .buttons {
+        gap: 20px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="card">
+
+    <h1>
+      Do you want to become<br>
+      my Best friend?
+    </h1>
+
+    <p>
+      Click a button to let me know! 😁
+    </p>
+
+    <div class="buttons">
+
+      <button id="yes">
+        Yes
+      </button>
+
+      <button id="no">
+        No
+      </button>
+
+    </div>
+
+    <div class="heart">
+      💗
+    </div>
+
+  </div>
+
+
+  <script>
+
+    const yesButton = document.getElementById("yes");
+    const noButton = document.getElementById("no");
+
+
+    // ==============================
+    // YES → WHATSAPP
+    // ==============================
+
+    const message =
+      "Yes i want to become best friend of Your 😁";
+
+    const whatsappURL =
+      "https://wa.me/918318053995?text=" +
+      encodeURIComponent(message);
+
+    yesButton.addEventListener("click", () => {
+      window.location.href = whatsappURL;
+    });
+
+
+    // ==============================
+    // NO BUTTON RUNS AWAY
+    // ==============================
+
+    function moveNoButton() {
+
+      const buttonWidth = noButton.offsetWidth;
+      const buttonHeight = noButton.offsetHeight;
+
+      const screenWidth = window.innerWidth;
+      const screenHeight = window.innerHeight;
+
+      const margin = 10;
+
+      let x;
+      let y;
+
+      // Randomly choose a screen edge
+      const edge = Math.floor(Math.random() * 4);
+
+
+      // TOP
+      if (edge === 0) {
+
+        x = Math.random() *
+          (screenWidth - buttonWidth - margin * 2) + margin;
+
+        y = margin;
+      }
+
+
+      // RIGHT
+      else if (edge === 1) {
+
+        x = screenWidth -
+          buttonWidth -
+          margin;
+
+        y = Math.random() *
+          (screenHeight - buttonHeight - margin * 2) + margin;
+      }
+
+
+      // BOTTOM
+      else if (edge === 2) {
+
+        x = Math.random() *
+          (screenWidth - buttonWidth - margin * 2) + margin;
+
+        y = screenHeight -
+          buttonHeight -
+          margin;
+      }
+
+
+      // LEFT
+      else {
+
+        x = margin;
+
+        y = Math.random() *
+          (screenHeight - buttonHeight - margin * 2) + margin;
+      }
+
+
+      // NOW make it leave the normal button layout
+      noButton.style.position = "fixed";
+
+      noButton.style.left = x + "px";
+      noButton.style.top = y + "px";
+    }
+
+
+    // Desktop
+    noButton.addEventListener(
+      "mouseenter",
+      moveNoButton
+    );
+
+
+    // Mobile
+    noButton.addEventListener(
+      "touchstart",
+      function(event) {
+
+        event.preventDefault();
+
+        moveNoButton();
+
+      },
+      { passive: false }
+    );
+
+
+    // Backup if it gets clicked
+    noButton.addEventListener(
+      "click",
+      function(event) {
+
+        event.preventDefault();
+
+        moveNoButton();
+
+      }
+    );
+
+  </script>
+
+</body>
+</html>
